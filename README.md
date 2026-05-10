@@ -50,7 +50,7 @@ llama-serverでの立ち上げ。<br>
     cmake -B build-vulkan -DGGML_VULKAN=ON
     cmake --build build-vulkan --config Release -j$(nproc)
 
-    uv pip install -r ./requirements.txt
+    uv pip install -r ./requirements.txt --index-strategy unsafe-best-match
     
 # 注意事項
 * **使用するLLMについて**<br>
