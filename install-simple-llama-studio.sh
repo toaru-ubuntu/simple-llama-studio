@@ -29,4 +29,4 @@ sudo apt install -y libvulkan-dev glslc spirv-headers
 cmake -B build-vulkan -DGGML_VULKAN=ON
 cmake --build build-vulkan --config Release -j$(nproc)
 
-uv pip install -r ./requirements.txt --index-strategy unsafe-best-match
+uv pip install -r ./requirements.txt
