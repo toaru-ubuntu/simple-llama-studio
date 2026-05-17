@@ -28,9 +28,16 @@ def download_model(hf_id, include_pattern, use_safe_mode):
 
     try:
         model_name = hf_id.split("/")[-1]
-        save_dir = MODELS_DIR / "hf_models" / model_name
         
-        (MODELS_DIR / "hf_models").mkdir(parents=True, exist_ok=True)
+        # --- 変更箇所: include_patternの有無で保存先を切り替える ---
+        if include_pattern.strip():
+            # 絞り込み指定がある場合は quantize フォルダ直下に保存
+            save_dir = MODELS_DIR / "quantize"
+            save_dir.mkdir(parents=True, exist_ok=True)
+        else:
+            # 絞り込み指定がない場合は従来通り hf_models/モデル名 フォルダに保存
+            save_dir = MODELS_DIR / "hf_models" / model_name
+            save_dir.mkdir(parents=True, exist_ok=True)
         
         # 基本コマンド
         command = [
@@ -46,6 +53,7 @@ def download_model(hf_id, include_pattern, use_safe_mode):
             patterns = include_pattern.strip().split()
             for pattern in patterns:
                 command.extend(["--include", pattern])
+        # --------------------------------------------------------
         
         # 実行環境の変数をコピー
         env = os.environ.copy()
@@ -69,7 +77,7 @@ def download_model(hf_id, include_pattern, use_safe_mode):
             env=env
         )
         
-        # === 修正箇所: 1文字ずつ読み込み、\r でも画面を更新する ===
+        # 1文字ずつ読み込み、\r でも画面を更新する
         char_buffer = []
         while True:
             char = download_process.stdout.read(1)
@@ -86,7 +94,6 @@ def download_model(hf_id, include_pattern, use_safe_mode):
                     yield base_log + clean_line
             elif char:
                 char_buffer.append(char)
-        # =========================================================
 
         download_process.wait()
         
